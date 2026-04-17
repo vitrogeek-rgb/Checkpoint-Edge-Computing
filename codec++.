@@ -1,0 +1,157 @@
+//definir variáveis
+int ldr = A0;//fotoresistor no pino A0
+int ledGreen = 9;//led verde no pino 9
+int ledYellow = 8;//led amarelo no pino 8
+int ledRed = 7;//led vermelho no pino 7
+int buzzer = 6;//buzina no pino 6
+
+
+#include <LiquidCrystal.h>
+LiquidCrystal lcd(12, 11, 10, 5, 4, 3, 2);
+
+//definição de caractere especial. nesse caso, a logo.
+byte SIMB1[8]={
+B00000,
+B00000,
+B00000,
+B00001,
+B00011,
+B00111,
+B00111,
+B00110
+};
+
+byte SIMB2[8]={
+B00000,
+B00000,
+B11111,
+B11000,
+B11100,
+B10110,
+B11010,
+B11011
+};
+byte SIMB3[8]={
+B00000,
+B00000,
+B00000,
+B10000,
+B01000,
+B00100,
+B00100,
+B00100
+};
+byte SIMB4[8]={
+B00111,
+B00101,
+B00100,
+B00010,
+B00001,
+B00000,
+B00000,
+B00000
+};
+byte SIMB5[8]={
+B00011,
+B11110,
+B11100,
+B00000,
+B00000,
+B11111,
+B00000,
+B00000
+};
+byte SIMB6[8]={
+B00100,
+B00100,
+B00100,
+B01000,
+B10000,
+B00000,
+B00000,
+B00000,	
+};
+
+bool buzzerSom = false; //define se a buzina está ligada ou não
+
+void setup(){
+  Serial.begin(9600);
+  //define os pinos como saida de dados (output)
+  //ou entrada de dados(input)
+  pinMode(ldr,INPUT);
+  pinMode(ledGreen,OUTPUT);
+  pinMode(ledYellow,OUTPUT);
+  pinMode(ledRed,OUTPUT);
+  pinMode(buzzer,OUTPUT);
+  //configuração da tela (LCD)
+  lcd.begin(16,2);              
+  //configuração de caractere especial
+  lcd.createChar(1,SIMB1);
+  lcd.createChar(2,SIMB2);
+  lcd.createChar(3,SIMB3);
+  lcd.createChar(4,SIMB4);
+  lcd.createChar(5,SIMB5);
+  lcd.createChar(6,SIMB6);
+  
+  byte Count = 1;
+ 
+  lcd.clear();
+ //Configuração da logo no lcd, organizando as partes
+ //que, no código, estão separados, fazendo com que fique completo.
+  for (byte y = 0; y < 2; y++) {
+    for (byte x = 0; x < 3; x++) {
+      lcd.setCursor(x, y);
+      lcd.write(Count);
+      Count++;
+    }
+    
+  }
+    
+  lcd.setCursor(4,0);           
+  lcd.print("Seja");    
+  lcd.setCursor(4,1);           
+  lcd.print("Bem Vindo!");
+}
+
+void loop(){
+  
+  int valor = analogRead(ldr);//lê o valor do pino analógico
+  int luz = map(valor, 0, 1023,0,100); //converte a leitura para porcentagem
+  luz = constrain(luz,0,100);//"constrain()"restringe um número a ficar dentro do intervalo
+  
+  digitalWrite(ledGreen,LOW);
+  digitalWrite(ledYellow,LOW);
+  digitalWrite(ledRed,LOW);
+  
+  unsigned long tempNovo = millis();//armazena o tempo atual
+  
+//se a porcentagem de luz for menor ou igual a 30, a led
+// verde ficará acesa, indicando que a luz está ideal
+    if (luz <=30){
+        digitalWrite(ledGreen,HIGH);
+        digitalWrite(buzzer,LOW);
+        buzzerSom = false;
+
+    }
+//se a porcentagem de luz for maior ou igual a 60, a led
+//amarela ficará acesa, indicando que a luz está em um nível de alerta
+    else if (luz <=60 && luz >30){
+        digitalWrite(ledYellow,HIGH);
+        digitalWrite(buzzer,HIGH);
+        delay(3000);
+        digitalWrite(buzzer,LOW);
+        delay(3000);
+    
+    }
+//se a porcentagem de luz for maior que 60, a led vermelha ficará
+//acesa, indicando que a um problema
+    else{
+        digitalWrite(ledRed,HIGH);
+        digitalWrite(buzzer,LOW);
+        buzzerSom = false;
+    }
+}
+    
+
+
+
