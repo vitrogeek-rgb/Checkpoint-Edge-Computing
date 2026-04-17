@@ -135,7 +135,7 @@ void loop(){
     }
 //se a porcentagem de luz for maior ou igual a 60, a led
 //amarela ficará acesa, indicando que a luz está em um nível de alerta
-    else if (luz <=60 && luz >30){
+    if (luz <60 && luz >30){
         digitalWrite(ledYellow,HIGH);
         digitalWrite(buzzer,HIGH);
         delay(3000);
@@ -145,9 +145,9 @@ void loop(){
     }
 //se a porcentagem de luz for maior que 60, a led vermelha ficará
 //acesa, indicando que a um problema
-    else{
+     if (luz >60){
         digitalWrite(ledRed,HIGH);
-        digitalWrite(buzzer,LOW);
+      	digitalWrite(ledYellow,LOW);
         buzzerSom = false;
     }
 }
